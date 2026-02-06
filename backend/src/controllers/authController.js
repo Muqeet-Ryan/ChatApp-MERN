@@ -52,11 +52,32 @@ export const signup = async(req,res) => {
     }
 }
 
+export const login = async(req,res) => {
+    const {email, password} = req.body;
 
-export const login = (req,res) => {
-    res.json();
+    try {
+        if(!email || !password){
+            return res.status(400).json({message: 'Enter all fields'});
+        }
+        const user = await User.findOne({email});
+        if(!user) return res.status(400).json({message: 'invalid credentials'});
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if(!isPasswordCorrect) return res.status(400).json({message: 'invalid credentials'});
+        generateToken(user._id, res);
+          res.status(201).json({
+                id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                profilePicture: user.profilePicture
+            });
+
+    } catch (error) {
+        console.error('error in login ', error);
+        res.status(500).json({message: 'server error'});
+    }
 }
-export const logout = (req,res) => {
-    res.json();
+export const logout = async(_,res) => {
+    res.cookie('jwt', '', {maxAge:0});
+    res.status(200).json({message: 'Logged out successfully'});
 }
 
