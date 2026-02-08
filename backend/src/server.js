@@ -18,9 +18,6 @@ app.use('/api/message', messageRoutes);
 
 const PORT = process.env.PORT; 
 
-
-
-
 const startServer = async() => {
     try {
         await connectDB();
