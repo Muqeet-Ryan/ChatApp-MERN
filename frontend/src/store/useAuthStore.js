@@ -48,5 +48,16 @@ export const useAuthStore = create((set) => ({
     }
   },
 
+  logout: async () => {
+    try {
+      await api.post("/auth/logout");
+      set({ authUser: null });
+      toast.success("Logged out successfully");
+    } catch (error) {
+      toast.error("Error logging out");
+      console.log("Logout error:", error);
+    }
+  },
+
 }));
 
