@@ -6,10 +6,10 @@ import cors from 'cors';
 import authRoutes from './routes/authRoutes.js'
 import messageRoutes from './routes/messageRoutes.js'
 import { connectDB } from './config/db.js';
+import { app, server } from './lib/socket.js';
 
 
 dotenv.config();
-const app = express();
 
 app.use(express.json()); 
 app.use(cors({
@@ -25,7 +25,7 @@ const PORT = process.env.PORT;
 const startServer = async() => {
     try {
         await connectDB();
-        app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });
     } catch (error) {

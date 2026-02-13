@@ -1,17 +1,23 @@
-import {create} from 'zustand';
-import {api} from '../lib/axios.js'
-import toast from 'react-hot-toast';
+import { create } from "zustand";
+import { api } from "../lib/axios.js";
+import toast from "react-hot-toast";
+import { io } from "socket.io-client";
 
-export const useAuthStore = create((set) => ({
+const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5002" : "/";
+
+export const useAuthStore = create((set, get) => ({
   authUser: null,
   isCheckingAuth: true,
   isSingingUp: false,
   isLoggingIn: false,
+  socket: null,
+  onlineUsers: [],
 
-  checkAuth: async() => {
+  checkAuth: async () => {
     try {
       const res = await api.get("/auth/check");
       set({ authUser: res.data });
+      get().connectSocket();
     } catch (error) {
       console.error(error);
       set({ authUser: null });
@@ -20,30 +26,32 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  signup: async(data) => {
-    set({isSingingUp: true});
+  signup: async (data) => {
+    set({ isSingingUp: true });
     try {
-      const res = await api.post('/auth/signup', data);
-      set({authUser: res.data});
-      toast.success('user created');
+      const res = await api.post("/auth/signup", data);
+      set({ authUser: res.data });
+      toast.success("user created");
+      get().connectSocket();
     } catch (error) {
-      console.error('Error in signup', error);
-      toast.error('Error signing-up');
+      console.error("Error in signup", error);
+      toast.error("Error signing-up");
     } finally {
-      set({isSingingUp: false});
+      set({ isSingingUp: false });
     }
   },
-  login: async(data) => {
-    set({isLoggingIn: true});
+  login: async (data) => {
+    set({ isLoggingIn: true });
     try {
-      const res = await api.post('/auth/login', data);
-      set({authUser: res.data});
-      toast.success('user logged in');
+      const res = await api.post("/auth/login", data);
+      set({ authUser: res.data });
+      toast.success("user logged in");
+      get().connectSocket();
     } catch (error) {
-      console.error('Error in login', error);
-      toast.error('Error logging-in');
+      console.error("Error in login", error);
+      toast.error("Error logging-in");
     } finally {
-      set({isLoggingIn: false});
+      set({ isLoggingIn: false });
     }
   },
 
@@ -52,12 +60,14 @@ export const useAuthStore = create((set) => ({
       await api.post("/auth/logout");
       set({ authUser: null });
       toast.success("Logged out successfully");
+      get().disconnectSocket();
+
     } catch (error) {
       toast.error("Error logging out");
       console.log("Logout error:", error);
     }
   },
-   updateProfile: async (data) => {
+  updateProfile: async (data) => {
     try {
       const res = await api.put("/auth/update-profile", data);
       set({ authUser: res.data });
@@ -67,6 +77,25 @@ export const useAuthStore = create((set) => ({
       toast.error(error.response.data.message);
     }
   },
+  connectSocket: () => {
+    const { authUser } = get();
+    if (!authUser || get().socket?.connected) return;
 
+    const socket = io(BASE_URL, {
+      withCredentials: true, // this ensures cookies are sent with the connection
+    });
+
+    socket.connect();
+
+    set({ socket });
+
+    // listen for online users event
+    socket.on("getOnlineUsers", (userIds) => {
+      set({ onlineUsers: userIds });
+    });
+  },
+
+  disconnectSocket: () => {
+    if (get().socket?.connected) get().socket.disconnect();
+  },
 }));
-
