@@ -7,7 +7,9 @@ import authRoutes from './routes/authRoutes.js'
 import messageRoutes from './routes/messageRoutes.js'
 import { connectDB } from './config/db.js';
 import { app, server } from './lib/socket.js';
+import path from 'path';
 
+const __dirname = path.resolve();
 
 dotenv.config();
 
@@ -21,6 +23,15 @@ app.use('/api/messages', messageRoutes);
 
 
 const PORT = process.env.PORT; 
+
+// make ready for deployment
+if (process.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  app.get("*", (_, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
+}
 
 const startServer = async() => {
     try {
