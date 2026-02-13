@@ -7,13 +7,17 @@ import MessageInput from "./MessageInput.jsx";
 import MessagesLoadingSkeleton from "../components/MessagesLoadingSkeleton.jsx"
 
 function ChatContainer() {
-  const { selectedUser, getMessagesByUserId, messages, isMessagesLoading } = useChatStore();
+  const { selectedUser, getMessagesByUserId, messages, isMessagesLoading,subscribeToMessages,unsubscribeFromMessages } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
   useEffect(() => {
     getMessagesByUserId(selectedUser._id);
-  }, [selectedUser, getMessagesByUserId]);
+        subscribeToMessages();
+
+    // clean up
+    return () => unsubscribeFromMessages();
+  }, [selectedUser, getMessagesByUserId,subscribeToMessages,unsubscribeFromMessages]);
 
    useEffect(() => {
     if (messageEndRef.current) {
