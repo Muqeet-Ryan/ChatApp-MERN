@@ -22,10 +22,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 
 
-const PORT = process.env.PORT; 
+const PORT = process.env.PORT || 5002; 
 
 // make ready for deployment
-if (process.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
   app.get("*", (_, res) => {
