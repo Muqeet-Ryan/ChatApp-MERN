@@ -36,7 +36,7 @@ function ChatContainer() {
         <div
           key={msg._id}
           className={`chat ${
-            msg.senderId === authUser._id ? "chat-end" : "chat-start"
+            msg.senderId.toString() === authUser._id.toString() ? "chat-end" : "chat-start"
           }`}
         >
           <div
