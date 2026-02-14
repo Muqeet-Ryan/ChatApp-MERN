@@ -11,6 +11,8 @@ function ChatContainer() {
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
+
+
   useEffect(() => {
     getMessagesByUserId(selectedUser._id);
         subscribeToMessages();
@@ -25,6 +27,8 @@ function ChatContainer() {
     }
   }, [messages]);
 
+    if (!authUser || !selectedUser) return null; 
+
   return (
     <>
       <ChatHeader />
@@ -37,7 +41,9 @@ function ChatContainer() {
           key={msg._id}
           className={`chat ${
             msg.senderId.toString() === authUser._id.toString() ? "chat-end" : "chat-start"
-          }`}
+            
+          }`
+}
         >
           <div
             className={`chat-bubble relative ${
