@@ -13,14 +13,14 @@ Implements **JWT authentication**, **Arcjet rate limiting**, and **Socket.io** f
 
 ##  Features
 
-* 🔐 JWT-based authentication (Login / Signup)
-* ⚡ Real-time messaging with Socket.io
-* 🛡️ Arcjet rate limiting & abuse protection
-* 🌐 CORS configured for secure cross-origin requests
-* 🗄️ MongoDB for users & messages
-* ⚛️ Zustand for global state management
-* 🎨 Responsive UI built with React + TailwindCSS
-* ☁️ Deployed on Render
+*  JWT-based authentication (Login / Signup)
+*  Real-time messaging with Socket.io
+*  Arcjet rate limiting & abuse protection
+*  CORS configured for secure cross-origin requests
+*  MongoDB for users & messages
+*  Zustand for global state management
+*  Responsive UI built with React + TailwindCSS
+*  Deployed on Render
 
 ---
 
